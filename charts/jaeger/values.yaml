@@ -195,6 +195,7 @@ agent:
   enabled: true
   annotations: {}
   image: jaegertracing/jaeger-agent
+  # tag: 1.22
   imagePullSecrets: []
   pullPolicy: IfNotPresent
   cmdlineParams: {}
@@ -253,6 +254,7 @@ agent:
   useHostNetwork: false
   dnsPolicy: ClusterFirst
   priorityClassName: ""
+  initContainers: []
 
   serviceMonitor:
     enabled: false
@@ -264,6 +266,7 @@ collector:
   enabled: true
   annotations: {}
   image: jaegertracing/jaeger-collector
+  # tag: 1.22
   imagePullSecrets: []
   pullPolicy: IfNotPresent
   dnsPolicy: ClusterFirst
@@ -277,6 +280,8 @@ collector:
     # targetMemoryUtilizationPercentage: 80
   service:
     annotations: {}
+    # The IP to be used by the load balancer (if supported)
+    loadBalancerIP: ''
     # List of IP ranges that are allowed to access the load balancer (if supported)
     loadBalancerSourceRanges: []
     type: ClusterIP
@@ -381,14 +386,35 @@ query:
     pullPolicy: IfNotPresent
     containerPort: 4180
     args: []
+    extraEnv: []
     extraConfigmapMounts: []
     extraSecretMounts: []
+  # config: |-
+  #   provider = "oidc"
+  #   https_address = ":4180"
+  #   upstreams = ["http://localhost:16686"]
+  #   redirect_url = "https://jaeger-svc-domain/oauth2/callback"
+  #   client_id = "jaeger-query"
+  #   oidc_issuer_url = "https://keycloak-svc-domain/auth/realms/Default"
+  #   cookie_secure = "true"
+  #   email_domains = "*"
+  #   oidc_groups_claim = "groups"
+  #   user_id_claim = "preferred_username"
+  #   skip_provider_button = "true"
   podSecurityContext: {}
   securityContext: {}
   agentSidecar:
     enabled: true
+#    resources:
+#      limits:
+#        cpu: 500m
+#        memory: 512Mi
+#      requests:
+#        cpu: 256m
+#        memory: 128Mi
   annotations: {}
   image: jaegertracing/jaeger-query
+  # tag: 1.22
   imagePullSecrets: []
   pullPolicy: IfNotPresent
   dnsPolicy: ClusterFirst
@@ -514,6 +540,7 @@ esIndexCleaner:
     runAsUser: 1000
   annotations: {}
   image: jaegertracing/jaeger-es-index-cleaner
+  # tag: 1.22
   imagePullSecrets: []
   tag: latest
   pullPolicy: Always
